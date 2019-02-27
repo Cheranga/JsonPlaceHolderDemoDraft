@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -12,12 +13,21 @@ namespace JsonPlaceHolderDemo.Controllers
     [Route("api/[controller]")]
     public class PostsController : ControllerBase
     {
+        private readonly HttpClient _httpClient;
+        public PostsController(IHttpClientFactory httpClientFactory)
+        {
+            if (httpClientFactory == null)
+            {
+                throw new ArgumentNullException(nameof(httpClientFactory));
+            }
+
+            _httpClient = httpClientFactory.CreateClient();
+        }
+
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var httpClient = new HttpClient();
-
-            var httpResponse = await httpClient.GetAsync(@"https://jsonplaceholder.typicode.com/posts").ConfigureAwait(false);
+            var httpResponse = await _httpClient.GetAsync(@"https://jsonplaceholder.typicode.com/posts").ConfigureAwait(false);
             if (!httpResponse.IsSuccessStatusCode)
             {
                 return StatusCode((int)HttpStatusCode.InternalServerError, httpResponse.ReasonPhrase);
@@ -31,9 +41,7 @@ namespace JsonPlaceHolderDemo.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            var httpClient = new HttpClient();
-
-            var httpResponse = await httpClient.GetAsync($@"http://jsonplaceholder.typicode.com/posts/{id}").ConfigureAwait(false);
+            var httpResponse = await _httpClient.GetAsync($@"http://jsonplaceholder.typicode.com/posts/{id}").ConfigureAwait(false);
             if (!httpResponse.IsSuccessStatusCode)
             {
                 return StatusCode((int)HttpStatusCode.InternalServerError, httpResponse.ReasonPhrase);
