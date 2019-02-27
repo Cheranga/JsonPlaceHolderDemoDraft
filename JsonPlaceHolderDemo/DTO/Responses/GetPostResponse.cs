@@ -1,6 +1,6 @@
 ﻿namespace JsonPlaceHolderDemo.DTO.Responses
 {
-    public class GetPostsResponse
+    public class GetPostResponse
     {
         public int UserId { get; set; }
         public int Id { get; set; }
